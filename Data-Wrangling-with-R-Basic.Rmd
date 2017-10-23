@@ -14,26 +14,36 @@ library(readr)
 ```
 
 ## Case Studies 1
-## Description : 
 ```{r}
 students<-read.csv("https://assets.datacamp.com/production/course_723/datasets/students_with_dates.csv",stringsAsFactors = F)
 # remove first column
 students<-students[,-1]
 save(students, file="students.RData")
 ```
-# convert date to tbl_df for easier manipulation
+convert date to tbl_df for easier manipulation
 ```{r}
 x<-c(1:3,5,7:24,31:32)
 std<-tbl_df(students)%>%na.omit()%>%select(names(students[,x]))
 glimpse(std)
 ```
-# convert char into factor manually
+convert char into factor and date manually
 ```{r}
-f<-c(1:2,6,9:12,16:23)
+f<-c(1:2,6,9:12,16:21)
 std[,f]<-lapply(std[,f],factor)
 std["dob"]<-as.Date(std[["dob"]])
 #glimpse(std)
 std%>% group_by(sex)%>%summarise(count=n())
 ggplot(std,aes(sex),color=sex)+geom_bar()
+```
+filter the student whose absences greater than average
+```{r}
+(std_year<-std%>%separate(dob,into="year",sep="-",remove=F))
+absences<-std_year%>%group_by(sex)%>%summarise(avg_absences=mean(absences))
+ggplot(std_year,aes(x=year,y=absences,color=sex))+geom_point()+facet_wrap(~ sex)
+```
+join the table
+```{r}
+std_absences<-std_year%>%left_join(absences,by="sex")%>%filter(absences>ceiling(avg_absences))
+ggplot(std_absences,aes(x=internet,y=absences,color=internet))+geom_line()
 ```
 
