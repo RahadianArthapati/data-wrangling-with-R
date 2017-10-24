@@ -44,6 +44,87 @@ ggplot(std_year,aes(x=year,y=absences,color=sex))+geom_point()+facet_wrap(~ sex)
 join the table
 ```{r}
 std_absences<-std_year%>%left_join(absences,by="sex")%>%filter(absences>ceiling(avg_absences))
-ggplot(std_absences,aes(x=internet,y=absences,color=internet))+geom_line()
+#ggplot(std_absences,aes(x=internet,y=absences,color=internet))+geom_point()
+boxplot(absences ~ internet,data=std_absences,xlab="Internet Usage",ylab="Absences")
+```
+
+## Case Studies 2
+
+```{r}
+load(url("https://assets.datacamp.com/production/course_1800/datasets/ucb_admit.RData"))
+glimpse(ucb_admit)
+```
+Count number of male and female applicants admitted
+```{r}
+(ucb_counts <- ucb_admit %>% count(Gender, Admit) %>% spread(Admit, n) %>% mutate(Perc_Admit = Admitted / (Admitted + Rejected)))
+```
+Table of counts of admission status and gender for each department
+```{r}
+(admit_by_dept <- ucb_admit %>%count(Dept, Gender, Admit) %>%spread(Admit, n)%>% mutate(Perc_Admit = Admitted / (Admitted + Rejected)))
+```
+Simpson's Paradox, 
+is a phenomenon in probability and statistics, in which a trend appears in different groups of data but disappears or reverses when these groups are combined.
+The practical significance of Simpson's paradox surfaces in decision making situations where it poses the following dilemma: Which data should we consult in choosing an action, the aggregated or the partitioned?
+- Overall: males more likely to be admitted
+- Within Most Departements : females more likely
+When controlling for departement, relationship between gender and admission status is reversed
+Potential reason (?):
+- Women tended to apply to competitive departements with low admission rates
+- Men tended to apply to less competitive departements with high admission rates
+
+## Case Studies 3 - Sampling Strategies
+Simple Random Sample
+Stratified Sample
+Cluster Sample *
+Multistage Sample *
+* common in economic reason
+```{r}
+library(openintro)
+data(county)
+#remove DC
+(county_noDC<-county%>%filter(state != "District of Columbia") %>% droplevels())
+```
+Simple Random Sample of 150 County
+```{r}
+county_srs<-county_noDC%>%sample_n(size=150)
+glimpse(county_srs)
+#SRS state distribution
+(county_srs%>%group_by(state)%>%count())
+```
+Stratified Sample
+```{r}
+county_str<-county_noDC%>%group_by(state)%>%sample_n(size=3)
+glimpse(county_str)
+county_str%>%group_by(state)
+```
+
+```{r}
+load(url("https://assets.datacamp.com/production/course_1800/datasets/evals.RData"))
+glimpse(evals)
+```
+
+```{r}
+cat_vars <- c("rank", "ethnicity", "gender", "language",
+              "cls_level", "cls_profs", "cls_credits",
+              "pic_outfit", "pic_color")
+evals <- evals %>%mutate(cls_type = ifelse(cls_students >= 60, "large", 
+                      ifelse(cls_students > 18, "midsize", "small")))
+
+ggplot(evals, aes(x=bty_avg,y=score,color=cls_type)) +
+  geom_point()
+```
+## Case Studies 4
+```{r}
+library(MASS)
+
+# Plot Max.Price vs. Price as red triangles
+plot(Cars93$Price,Cars93$Max.Price,
+,pch=17,col="red")
+
+# Add Min.Price vs. Price as blue circles
+points(Cars93$Price,Cars93$Min.Price,pch=16,col="blue")
+
+# Add an equality reference line with abline()
+abline(a = 0, b = 1, lty = 2)
 ```
 
