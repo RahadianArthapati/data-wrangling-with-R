@@ -4,3 +4,127 @@ author: "Rahadian Arthapati"
 date: "10/25/2017"
 output: html_document
 ---
+```{r}
+library(MASS)
+library(ggplot2)
+library(corrplot)
+library(rpart)
+library(aplpack) #Bagplot
+```
+## Showing more complex relationships between variables
+# Correlation Plot
+```{r}
+mtCor<-cor(mtcars)
+corrplot(mtCor, method = "ellipse")
+```
+# Displaying Decision Tree Models
+```{r}
+treeModel<-rpart(mpg ~.,data=mtcars)
+plot(treeModel)
+text(treeModel,ex=1.6,col="red",xpd=T)
+```
+
+```{r}
+boxplot(Cars93$Min.Price, Cars93$Max.Price)
+
+bagplot(Cars93$Min.Price, Cars93$Max.Price, cex = 1.2)
+# Add an equality reference line
+abline(a = 0, b = 1, lty = 2)
+
+```
+
+```{r}
+numericalVars<- UScereal[, sapply(UScereal, is.numeric)]
+# Compute the correlation matrix for these variables
+corrMat<-cor(numericalVars)
+# Generate the correlation ellipse plot
+corrplot(corrMat,method="ellipse")
+```
+
+```{r}
+par(mfrow=c(1,2))
+par(cex.main=0.8)
+plot(whiteside$Temp, whiteside$Gas)
+title("Gas vs Temp. scatterplot")
+plot(whiteside$Insul)
+title("Insul barplot")
+
+```
+The specific type values used here are:
+
+"p" for "points"
+"l" for "lines"
+"o" for "overlaid" (i.e., lines overlaid with points)
+"s" for "steps"
+"n" for empty plot
+```{r}
+# Set up a 2-by-2 plot array
+par(mfrow=c(2,2))
+# Plot the Animals2 brain weight data as points
+plot(Animals$brain,type="p")
+# Add the title
+title("points")
+# Plot the brain weights with lines
+plot(Animals$brain,type="l")
+# Add the title
+title("lines")
+# Plot the brain weights as lines overlaid with points
+plot(Animals$brain,type="o")
+# Add the title
+title("overlaid")
+# Plot the brain weights as steps
+plot(Animals$brain,type="s")
+# Add the title
+title("steps")
+```
+
+```{r}
+# Create the numerical vector x
+x <- seq(0, 10, length = 200)
+# Compute the Gaussian density for x with mean 2 and standard deviation 0.2
+gauss1 <- dnorm(x, mean = 2, sd = 0.2)
+# Compute the Gaussian density with mean 4 and standard deviation 0.5
+gauss2 <- dnorm(x, mean = 4, sd = 0.5)
+# Plot the first Gaussian density
+plot(x,gauss1,type="l",ylab="Gaussian probability density")
+# Add lines for the second Gaussian density
+lines(x,gauss2, lty=3, lwd=3, col="red")
+```
+
+```{r}
+# Plot MPG.city vs. Horsepower as open circles
+plot(Cars93$Horsepower, Cars93$MPG.city,pch=1,ylab = "Miles per Gas",xlab = "Horse Power",cex=0.6)
+
+# Create index3, pointing to 3-cylinder cars
+index3<-which(Cars93$Cylinders==3)
+m<-which(Cars93$Horsepower==max(Cars93$Horsepower))
+# Highlight 3-cylinder cars as solid circles
+points(Cars93$Horsepower[index3],Cars93$MPG.city[index3],pch=16, col="blue")
+#Highlight the highest hp car
+points(Cars93$Horsepower[m],Cars93$MPG.city[m],pch=18, col="red",cex=1.2)
+
+# Add car names, offset from points, with larger bold text
+text(x = Cars93$Horsepower[index3], 
+     y = Cars93$MPG.city[index3],
+     labels = Cars93$Make[index3], adj = -0.1, cex=0.9,font=4)
+text(x = Cars93$Horsepower[m], 
+     y = Cars93$MPG.city[m],
+     labels = Cars93$Make[m], adj = 1.1, cex=0.9,font=4,srt=-15)
+legend(x="topright",pch = c(16,18),col=c("blue","red"),legend = c("3-Cylinder Cars","Highest HP Cars"))
+```
+
+
+```{r}
+boxplot(formula=sugars~shelf,data=UScereal,axes=F)
+
+# Add a default y-axis to the left of the boxplot
+axis(side = 2)
+
+# Add an x-axis below the plot, labelled 1, 2, and 3
+axis(side = 1, at = c(1,2,3))
+
+# Add a second x-axis above the plot
+axis(side = 3, at = c(1,2,3),
+     labels = c("floor", "middle", "top"))
+```
+
