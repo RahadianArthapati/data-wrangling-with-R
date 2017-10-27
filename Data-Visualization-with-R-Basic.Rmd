@@ -127,4 +127,120 @@ axis(side = 1, at = c(1,2,3))
 axis(side = 3, at = c(1,2,3),
      labels = c("floor", "middle", "top"))
 ```
+Using multiple plots to give multiple views of a dataset
+```{r}
+library(MASS)
+library(car) #for qqPlot
+# Set up a two-by-two plot array
+par(mfrow=c(2,2))
+
+# Plot the raw duration data
+plot(geyser$duration, main="Raw data")
+
+# Plot the normalized histogram of the duration data
+truehist(geyser$duration, main="Histogram")
+
+# Plot the density of the duration data
+plot(density(geyser$duration) ,main="Density")
+
+# Construct the normal QQ-plot of the duration data
+qqPlot(geyser$duration, main="QQ-plot")
+```
+Constructing and displaying layout matrices
+```{r}
+layoutMatrix <- matrix(
+  c(
+    1, 0,
+    0, 2,
+    3, 0
+  ), 
+  byrow = T, 
+  nrow = 3
+)
+layout(layoutMatrix)
+layout.show(3)
+# Construct vectors indexB and indexA
+indexB <- which(whiteside$Insul=="Before")
+indexA <- which(whiteside$Insul=="After")
+
+# Create plot 1 and add title
+plot(whiteside$Temp[indexB], whiteside$Gas[indexB],
+     ylim = c(0,8))
+title("Before data only")
+
+# Create plot 2 and add title
+plot(whiteside$Temp, whiteside$Gas,
+     ylim = c(0,8))
+title("Complete dataset")
+# Create plot 3 and add title
+plot(whiteside$Temp[indexA], whiteside$Gas[indexA],
+     ylim = c(0,8))
+title("After data only")
+```
+Using the symbols() function to display relations between more than two variables
+```{r}
+# Call symbols() to create the default bubbleplot
+symbols(Cars93$Horsepower, Cars93$MPG.city,
+        circles = sqrt(Cars93$Price),
+        inches = 0.1)
+```
+Saving plot results as files
+```{r}
+# Call png() with the name of the file we want to create
+png("bubbleplot.png")
+
+# Re-create the plot from the last exercise
+symbols(Cars93$Horsepower, Cars93$MPG.city,
+        circles = sqrt(Cars93$Price),
+        inches = 0.1)
+
+# Save our file and return to our interactive session
+dev.off()
+
+# Verify that we have created the file
+list.files(pattern = "png")
+```
+Using color to enhance a bubbleplot
+```{r}
+# Iliinsky and Steele color name vector
+IScolors <- c("red", "green", "yellow", "blue",
+              "black", "white", "pink", "cyan",
+              "gray", "orange", "brown", "purple")
+
+# Create the `cylinderLevel` variable
+cylinderLevels<-as.numeric(Cars93$Cylinders)
+
+# Create the colored bubbleplot
+symbols(Cars93$Horsepower, Cars93$MPG.city, 
+        circles = cylinderLevels, inches = 0.2, 
+        bg = IScolors[cylinderLevels])
+```
+The tabplot package and grid graphics
+```{r}
+# Load the insuranceData package
+library(insuranceData)
+
+# Use the data() function to load the dataCar data frame
+data(dataCar)
+
+# Load the tabplot package
+suppressPackageStartupMessages(library(tabplot))
+
+# Generate the default tableplot() display
+tableplot(dataCar)
+```
+A lattice graphics example
+```{r}
+# Load the lattice package
+library(lattice)
+
+# Use xyplot() to construct the conditional scatterplot
+xyplot(calories ~ sugars| shelf,UScereal)
+```
+
+
+
+
+
+
 
