@@ -1,0 +1,114 @@
+---
+title: "Data Visualization with ggplot2"
+author: "Rahadian Arthapati"
+date: "10/27/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(readr)
+```
+
+```{r}
+# Change the command below so that cyl is treated as factor
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+geom_point()
+```
+
+```{r}
+par(mfrow=c(1,2))
+ggplot(mtcars, aes(x = wt, y = mpg, color = disp)) +
+  geom_point()
+
+ggplot(mtcars, aes(x = wt, y = mpg, size = disp)) +
+  geom_point()
+
+```
+
+```{r}
+# Convert cyl to factor
+mtcars$cyl <- as.factor(mtcars$cyl)
+
+# Plot 1: add geom_point() to this command to create a scatter plot
+ggplot(mtcars, aes(x = wt, y = mpg, col = cyl)) +
+  geom_point()
+
+# Plot 2: include the lines of the linear models, per cyl
+ggplot(mtcars, aes(x = wt, y = mpg, col = cyl)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+
+# Plot 3: include a lm for the entire dataset in its whole
+ggplot(mtcars, aes(x = wt, y = mpg, col = cyl)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_smooth(aes(group = 1), method = "lm", se = FALSE, linetype = 2)
+```
+Convert iris into tidy data
+```{r}
+library(tidyr)
+iris.tidy <- iris %>%
+  gather(key, Value, -Species) %>%
+  separate(key, c("Part", "Measure"), "\\.")
+
+# Add column with unique ids (don't need to change)
+iris$Flower <- 1:nrow(iris)
+iris.wide <- iris %>%
+  gather(key, value, -Species, -Flower) %>%
+  separate(key, c("Part", "Measure"), "\\.") %>%
+  spread("Measure", value)
+```
+
+```{r}
+ggplot(iris.tidy, aes(x = Species, y = Value, col = Part)) +
+  geom_jitter() +
+  facet_grid(. ~ Measure)
+
+ggplot(iris.wide, aes(x = Length, y = Width, color = Part)) +
+  geom_jitter() +
+  facet_grid(. ~ Species)
+```
+Overplotting - alpha with large datasets
+```{r}
+# Dot plot with jittering
+ggplot(diamonds, aes(x = clarity, y = carat, color = price)) +
+  geom_point(alpha = 0.5, position = "jitter")
+
+ggplot(mtcars, aes(x = cyl, y = wt)) +
+  geom_point(position = position_jitter(.1))
+```
+Geom bar
+```{r}
+posn_d <- position_dodge(width=.2)
+ggplot(mtcars, aes(x = cyl, fill = factor(am))) +
+  geom_bar(position = posn_d)+
+  scale_fill_brewer(palette = "Set1") #for more detail ?brewer.pal
+
+ggplot(mtcars, aes(mpg,fill=factor(cyl))) +
+  geom_histogram(binwidth = 1,position="identity")
+
+ggplot(mtcars, aes(mpg,col=factor(cyl))) +
+  geom_freqpoly(binwidth = 1,position="identity")
+
+ggplot(Vocab, aes(x = factor(education), fill = factor(vocabulary))) +
+  geom_bar(position="fill") +
+  scale_fill_brewer()
+
+# Definition of a set of blue colors
+blues <- brewer.pal(9, "Blues") # from the RColorBrewer package
+# 1 - Make a color range using colorRampPalette() and the set of blues
+blue_range <- colorRampPalette(blues)
+# 2 - Use blue_range to adjust the color of the bars, use scale_fill_manual()
+ggplot(Vocab, aes(x = education, fill = vocabulary)) +
+  geom_bar(position = "fill") +
+  scale_fill_manual(values=blue_range(11))
+
+```
+
