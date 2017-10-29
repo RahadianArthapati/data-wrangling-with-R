@@ -327,6 +327,7 @@ p+facet_grid(am ~ cyl)
 Facet grid with many variables
 ```{r}
 # Code to create the cyl_am col and myCol vector
+library(RColorBrewer)
 mtcars$cyl_am <- paste(mtcars$cyl, mtcars$am, sep = "_")
 myCol <- rbind(brewer.pal(9, "Blues")[c(3,6,8)],
                brewer.pal(9, "Reds")[c(3,6,8)])
@@ -342,5 +343,97 @@ facet_grid(gear ~ vs)
 ggplot(mtcars, aes(x = wt, y = mpg,col=cyl_am,size=disp)) +
   geom_point()+scale_color_manual(values=myCol)+
 facet_grid(gear ~ vs)
+```
+Theme
+```{r}
+myPink<-"#FEE0D2"
+z<-ggplot(mtcars, aes(wt, mpg, col=cyl)) +
+               geom_jitter(alpha=0.7) +
+               geom_smooth(method = "lm", se = F)+
+               facet_grid(.~cyl)+
+               coord_equal()
+z+theme(plot.background=element_rect(fill=myPink))
+uniform_panels <- theme(panel.background = element_blank(), 
+                        legend.key = element_blank(), 
+                        legend.background=element_blank(), 
+                        strip.background = element_blank())
+z + 
+  theme(plot.background = element_rect(fill = myPink, color = "black", size = 3)) +
+  uniform_panels
+z+theme(panel.grid=element_blank(),
+  axis.line=element_line("black"),
+  axis.ticks=element_line("black")
+  )
+z+theme(strip.text=element_text(size=16,color=myRed), axis.title.x=element_text(color=myRed,hjust=0,face="italic"), axis.title.y=element_text(color=myRed,hjust=0,face="italic"),
+axis.text=element_text(color="black"))
+```
+Legend
+```{r}
+# Move legend by position
+z+theme(legend.position=c(.85,.85))
+
+# Change direction
+z+theme(legend.direction="horizontal")
+
+# Change location by name
+z+theme(legend.position="bottom")
+
+# Remove legend entirely
+z+theme(legend.position="none")
+```
+
+```{r}
+library(grid)
+# Increase spacing between facets
+z+theme(panel.spacing.x=unit(2,"cm"))
+# Add code to remove any excess plot margin space
+z+theme(panel.spacing.x=unit(2,"cm"),plot.margin=unit(c(0,0,0,0), "cm"))
+myRed="#99000D"
+# Theme layer saved as an object, theme_pink
+theme_pink <- theme(panel.background = element_blank(),
+                    legend.key = element_blank(),
+                    legend.background = element_blank(),
+                    strip.background = element_blank(),
+                    plot.background = element_rect(fill = myPink, color = "black", size = 3),
+                    panel.grid = element_blank(),
+                    axis.line = element_line(color = "black"),
+                    axis.ticks = element_line(color = "black"),
+                    strip.text = element_text(size = 16, color = myRed),
+                    axis.title.y = element_text(color = myRed, hjust = 0, face = "italic"),
+                    axis.title.x = element_text(color = myRed, hjust = 0, face = "italic"),
+                    axis.text = element_text(color = "black"),
+                    legend.position = "none")
+  
+# Apply theme_pink to z2
+z+theme_pink
+# Change code so that old theme is saved as old
+old<-theme_update(panel.background = element_blank(),
+             legend.key = element_blank(),
+             legend.background = element_blank(),
+             strip.background = element_blank(),
+             plot.background = element_rect(fill = myPink, color = "black", size = 3),
+             panel.grid = element_blank(),
+             axis.line = element_line(color = "black"),
+             axis.ticks = element_line(color = "black"),
+             strip.text = element_text(size = 16, color = myRed),
+             axis.title.y = element_text(color = myRed, hjust = 0, face = "italic"),
+             axis.title.x = element_text(color = myRed, hjust = 0, face = "italic"),
+             axis.text = element_text(color = "black"),
+             legend.position = "none")
+# Restore the old plot
+theme_set(old)
+# Display the plot z2
+z
+
+```
+Themes
+```{r}
+# Load ggthemes package
+library(ggthemes)
+# Apply theme_tufte
+z+theme_tufte()
+# Apply theme_tufte, modified:
+z+theme_tufte()+theme(legend.position=c(0.9, 0.9), legend.title=element_text(face="italic",size=12),axis.title=element_text(face="bold",size=14))
+ 
 ```
 
