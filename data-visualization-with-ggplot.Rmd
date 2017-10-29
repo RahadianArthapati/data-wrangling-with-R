@@ -255,3 +255,92 @@ wt.cyl.am +
                position = posn.d, fun.args = list(mult = 1), width = 0.1)
 ```
 
+```{r}
+gg_range <- function(x) {
+  # Change x below to return the instructed values
+  data.frame(ymin = min(x), # Min
+             ymax = max(x)) # Max
+}
+
+# Function to Custom function:
+med_IQR <- function(x) {
+  # Change x below to return the instructed values
+  data.frame(y = median(x), # Median
+             ymin = quantile(x)[2], # 1st quartile
+             ymax = quantile(x)[4])  # 3rd quartile
+}
+# The base ggplot command, you don't have to change this
+wt.cyl.am <- ggplot(mtcars, aes(x = cyl,y = wt, col = am, fill = am, group = am))
+
+# Add three stat_summary calls to wt.cyl.am
+wt.cyl.am +
+  stat_summary(geom = "linerange", fun.data = med_IQR,
+               position = posn.d, size = 3) +
+  stat_summary(geom = "linerange", fun.data = gg_range,
+               position = posn.d, size = 3,
+               alpha = .4) +
+  stat_summary(geom = "point", fun.y = median,
+               position = posn.d, size = 3,
+               col = "black", shape = "X")
+```
+Aspect ratio
+```{r}
+base.plot <- ggplot(iris, aes(Sepal.Length, Sepal.Width, col=Species)) +
+               geom_jitter() +
+               geom_smooth(method = "lm", se = F)
+
+# Plot base.plot: default aspect ratio
+base.plot
+
+# Fix aspect ratio (1:1) of base.plot
+base.plot+coord_equal()
+```
+Pie Chart
+```{r}
+thin.bar <- ggplot(mtcars, aes(x=1,fill=cyl)) +
+              geom_bar()
+
+# Convert thin.bar to pie chart
+thin.bar+coord_polar(theta="y")
+
+# Create stacked bar plot: wide.bar
+wide.bar <- ggplot(mtcars, aes(x=1,fill=cyl)) +
+              geom_bar(width=1)
+
+
+# Convert wide.bar to pie chart
+
+wide.bar+coord_polar(theta="y")
+```
+Facet grid
+```{r}
+# Basic scatter plot:
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point()
+# Separate rows according to transmission type, am
+p+facet_grid(am ~.)
+# Separate columns according to cylinders, cyl
+p+facet_grid(.~cyl)
+# Separate by both columns and rows 
+p+facet_grid(am ~ cyl)
+```
+Facet grid with many variables
+```{r}
+# Code to create the cyl_am col and myCol vector
+mtcars$cyl_am <- paste(mtcars$cyl, mtcars$am, sep = "_")
+myCol <- rbind(brewer.pal(9, "Blues")[c(3,6,8)],
+               brewer.pal(9, "Reds")[c(3,6,8)])
+
+# Basic scatter plot, add color scale:
+ggplot(mtcars, aes(x = wt, y = mpg,col=cyl_am)) +
+  geom_point()+scale_color_manual(values=myCol)
+# Facet according on rows and columns.
+ggplot(mtcars, aes(x = wt, y = mpg,col=cyl_am)) +
+  geom_point()+scale_color_manual(values=myCol)+
+facet_grid(gear ~ vs)
+# Add more variables
+ggplot(mtcars, aes(x = wt, y = mpg,col=cyl_am,size=disp)) +
+  geom_point()+scale_color_manual(values=myCol)+
+facet_grid(gear ~ vs)
+```
+
