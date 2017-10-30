@@ -436,4 +436,80 @@ z+theme_tufte()
 z+theme_tufte()+theme(legend.position=c(0.9, 0.9), legend.title=element_text(face="italic",size=12),axis.title=element_text(face="bold",size=14))
  
 ```
+Zooming in
+```{r}
+# Basic ggplot() command, coded for you
+p <- ggplot(mtcars, aes(x = wt, y = hp, col = am)) + geom_point() + geom_smooth()
+
+# Add scale_x_continuous
+p+scale_x_continuous(limits=c(3,6),expand=c(0,0))
+
+# The proper way to zoom in:
+p+coord_cartesian(xlim=c(3,6))
+```
+Aspect Ratio
+```{r}
+# Complete basic scatter plot function
+base.plot <- ggplot(iris, aes(Sepal.Length, Sepal.Width, col=Species)) +
+               geom_jitter() +
+               geom_smooth(method = "lm", se = F)
+
+# Plot base.plot: default aspect ratio
+base.plot
+
+# Fix aspect ratio (1:1) of base.plot
+base.plot+coord_equal()
+```
+Bar Plot
+```{r}
+# Base layers
+m <- ggplot(mtcars, aes(x = cyl,y = wt, col = am, fill = am))
+
+# Plot 1: Draw dynamite plot
+m +
+  stat_summary(fun.y = mean, geom = "bar") +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.1)
+
+# Plot 2: Set position dodge in each stat function
+m +
+  stat_summary(fun.y = mean, geom = "bar", position = "dodge") +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), 
+               geom = "errorbar", width = 0.1, position = "dodge")
+
+# Set your dodge posn manually
+posn.d <- position_dodge(0.9)
+
+# Plot 3:  Redraw dynamite plot
+m +
+  stat_summary(fun.y = mean, geom = "bar", position = posn.d) +
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 1), geom = "errorbar", width = 0.1, position = posn.d)
+```
+Pie chart
+```{r}
+ggplot(mtcars, aes(x = factor(1), fill = am)) +
+  geom_bar(position = "fill",width=1) +
+  facet_grid(.~cyl)+
+  coord_polar(theta="y")
+  
+```
+Parallel Coordinates Plot
+```{r}
+library(GGally)
+# All columns except am
+group_by_am <- 9
+my_names_am <- (1:11)[-group_by_am]
+# Basic parallel plot - each variable plotted as a z-score transformation
+ggparcoord(mtcars, my_names_am, groupColumn = group_by_am, alpha = .8)
+```
+Heat map
+```{r}
+# Create color palette
+myColors <- brewer.pal(9, "Reds")
+
+# Build the heat map from scratch
+ggplot(barley, aes(x = year, y = variety, fill = yield)) +
+  geom_tile() +
+  facet_wrap( ~ site, ncol = 1) +
+  scale_fill_gradientn(colors = myColors)
+```
 

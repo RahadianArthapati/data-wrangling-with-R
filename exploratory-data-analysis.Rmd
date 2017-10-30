@@ -1,0 +1,23 @@
+---
+title: "Exploratory Data Analysis"
+author: "Rahadian Arthapati"
+date: "10/29/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(readr)
+library(ggplot2)
+```
+Load Comic data
+```{r}
+comic<-read_csv(url("https://assets.datacamp.com/production/course_1796/datasets/comics.csv"))
+glimpse(comic)
+```
+
