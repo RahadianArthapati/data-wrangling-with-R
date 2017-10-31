@@ -20,4 +20,121 @@ Load Comic data
 comic<-read_csv(url("https://assets.datacamp.com/production/course_1796/datasets/comics.csv"))
 glimpse(comic)
 ```
+Let's start by creating a contingency table, which is a useful way to represent the total counts of observations that fall into each combination of the levels of categorical variables.
+```{r}
+comic[,c(3,6)]<-lapply(comic[,c(3,6)],as.factor)
+levels(comic$align)
+levels(comic$gender)
+tab<-table(comic$align, comic$gender)
+```
+Dropping levels that have very low counts
+```{r}
+tab
+comic<-comic%>%filter(align!="Reformed Criminals")%>%droplevels()
+```
+Side by side bar charts
+```{r}
+# Create side-by-side barchart of gender by alignment
+ggplot(comic, aes(x = align, fill = gender)) + 
+  geom_bar(position = "dodge")
+
+# Create side-by-side barchart of alignment by gender
+ggplot(comic, aes(x = gender, fill = align)) + 
+  geom_bar(position = "dodge") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+Conditional Proportions
+```{r}
+options(scipen = 999, digits = 3)
+prop.table(tab)
+prop.table(tab,2) #Conditional on columns
+prop.table(tab,1) #Conditional on rows
+```
+
+```{r}
+# Change the order of the levels in align
+comic$align <- factor(comic$align, 
+                       levels = c("Bad", "Neutral", "Good"))
+ggplot(comic,aes(x=id))+geom_bar()+facet_wrap(~align)
+ggplot(comic, aes(x = align)) + 
+  geom_bar() +
+  facet_wrap(~ gender)
+```
+
+```{r}
+# Filter cars with 4, 6, 8 cylinders
+cars<-read_csv(url("https://assets.datacamp.com/production/course_1796/datasets/cars04.csv"))
+common_cyl <- filter(cars, ncyl %in% c(4,6,8))
+
+# Create box plots of city mpg by ncyl
+ggplot(common_cyl, aes(x = as.factor(ncyl), y = city_mpg)) +
+  geom_boxplot()
+
+# Create overlaid density plots for same data
+ggplot(common_cyl, aes(x = city_mpg, fill = as.factor(ncyl))) +
+  geom_density(alpha = .3)
+```
+
+```{r}
+# Create hist of horsepwr
+cars %>%
+  ggplot(aes(x = horsepwr)) +
+  geom_histogram() +
+  ggtitle("Distribution of horsepower for all cars")
+
+# Create hist of horsepwr for affordable cars
+cars %>%
+  filter(msrp < 25000) %>%
+  ggplot(aes(x = horsepwr)) +
+  geom_histogram() +
+  xlim(c(90, 550)) +
+  ggtitle("Distribution of horsepower for affordable cars")
+```
+Plot Selection
+```{r}
+# Create plot of city_mpg
+cars %>%
+  ggplot(aes(x = 1, y = city_mpg)) +
+  geom_boxplot()
+
+# Create plot of width
+cars %>% 
+  ggplot(aes(x = width)) +
+  geom_density()
+```
+#Case Studies 1 : Predicting Algae Blooms
+```{r}
+data(algae,package = "DMwR2")
+glimpse(algae)
+```
+There are two main datasets for this problem. The first consists of data for 200 water samples. To be more precise, each observation in the available datasets is in effect an aggregation of several water samples collected from the same river over a period of 3 months, during the same season of the year.
+Each observation contains information on 11 variables. Three of these variables are nominal and describe the season of the year when the water samples to be aggregated were collected, as well as the size and speed of the river in question. The eight remaining variables are values of different chemical parameters measured in the water samples forming the aggregation, namely:
+• Maximum pH value • Mean value of NH+4 (ammonium) • Minimum value of O (oxygen) • Mean of PO3− (orthophosphate)
+24
+• Mean value of Cl (chloride) • Mean of total PO4 (phosphate)
+• Mean value of NO−3 (nitrates) • Mean of chlorophyll
+
+The second dataset contains information on 140 extra observations. It uses the same basic structure but it does not include information concerning the seven harmful algae frequencies. These extra observations can be regarded as a kind of test set. The main goal of our study is to predict the frequencies of the seven algae for these 140 water samples. This means that we are facing a predictive data mining task. 
+```{r}
+tibble::as_tibble(algae)
+summary(algae)
+```
+
+```{r}
+ggplot(algae,aes(x=mxPH)) +
+ geom_histogram(aes(y=..density..)) +
+ geom_density(color="red") + geom_rug() +
+ ggtitle("The Histogram of mxPH (maximum pH)") +
+ xlab("") + ylab("")
+library(car)
+qqPlot(algae$mxPH, main="Normal QQ Plot of maximum pH",ylab="")
+```
+
+```{r}
+plot(algae$NH4, xlab = "")
+abline(h = mean(algae$NH4, na.rm = T), lty = 1)
+abline(h = mean(algae$NH4, na.rm = T) + sd(algae$NH4, na.rm = T), lty = 2) > abline(h = median(algae$NH4, na.rm = T), lty = 3)
+identify(algae$NH4)
+```
+
 
