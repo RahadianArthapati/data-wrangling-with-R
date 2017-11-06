@@ -137,4 +137,15 @@ abline(h = mean(algae$NH4, na.rm = T) + sd(algae$NH4, na.rm = T), lty = 2) > abl
 identify(algae$NH4)
 ```
 
+```{r}
+library(forcats)
+algae <- mutate(algae,
+size=fct_relevel(size,c("small","medium","large")),
+speed=fct_relevel(speed,c("low","medium","high")),
+season=fct_relevel(season,c("spring","summer","autumn","winter")))
+
+ggplot(algae,aes(x=size,y=a1)) +
+geom_violin() + geom_jitter() + xlab("River Size") + ylab("Algal A1")
+```
+The result of this call is shown in plot above. The white areas represent the distribution of a1 for each of the river sizes. The areas are made to have the same size and thus wider regions represent ranges of values that have larger weight in terms of the distribution of the values. For instance we can observe that for rivers of medium size most values of a1 are packed near zero, while for smaller rivers the values are more spread across the range (thinner violin). We have also used the function geom_jitter() to include the concrete values as dots. Compared to geom_point() that we could have used instead, this function randomly jitters the points in the horizontal axis to try to avoid over-plotting of points.
 
